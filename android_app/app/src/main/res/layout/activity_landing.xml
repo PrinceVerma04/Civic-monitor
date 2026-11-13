@@ -30,10 +30,11 @@
                 android:src="@android:drawable/ic_menu_info_details" />
 
             <ImageView
+                android:id="@+id/heroLogo"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_marginTop="4dp"
-                android:src="@drawable/logo_mark"
+                android:src="@drawable/logo_nagar_netra"
                 android:contentDescription="@string/app_name" />
 
             <TextView

@@ -11,8 +11,8 @@ android {
         applicationId = "com.civicservices.monitor"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 5
+        versionName = "2.3"
     }
 
     buildTypes {
@@ -41,12 +41,13 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     // Camera
-    val cameraxVersion = "1.3.4"
+    val cameraxVersion = "1.4.2"
     implementation("androidx.camera:camera-core:$cameraxVersion")
     implementation("androidx.camera:camera-camera2:$cameraxVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
     implementation("androidx.camera:camera-video:$cameraxVersion")
+    implementation("androidx.camera:camera-effects:$cameraxVersion") // OverlayEffect — boxes into preview + video
 
     // On-device inference
     implementation("org.tensorflow:tensorflow-lite:2.16.1")

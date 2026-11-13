@@ -18,7 +18,7 @@
             android:alpha="0"
             android:scaleX="0.6"
             android:scaleY="0.6"
-            android:src="@drawable/logo_mark"
+            android:src="@drawable/logo_nagar_netra"
             android:contentDescription="@string/app_name" />
 
         <TextView

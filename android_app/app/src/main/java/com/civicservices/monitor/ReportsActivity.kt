@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import org.json.JSONObject
 import java.io.File
@@ -19,7 +20,11 @@ import java.io.File
 class ReportsActivity : AppCompatActivity() {
 
     private val selected = mutableSetOf<File>()
+    private val allMediaFiles = mutableListOf<File>()
+    private val checkboxesByFile = mutableMapOf<File, CheckBox>()
     private lateinit var exportButton: Button
+    private lateinit var selectAllButton: Button
+    private lateinit var deleteButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         ThemePrefs.applySavedMode(this)
@@ -28,7 +33,11 @@ class ReportsActivity : AppCompatActivity() {
 
         findViewById<ImageButton>(R.id.backButton).setOnClickListener { finish() }
         exportButton = findViewById(R.id.exportButton)
+        selectAllButton = findViewById(R.id.selectAllButton)
+        deleteButton = findViewById(R.id.deleteButton)
         exportButton.setOnClickListener { exportSelected() }
+        selectAllButton.setOnClickListener { toggleSelectAll() }
+        deleteButton.setOnClickListener { deleteSelected() }
 
         val container = findViewById<LinearLayout>(R.id.reportsContainer)
         val dateFolders = MediaVault.listDateFolders(this)
@@ -57,9 +66,11 @@ class ReportsActivity : AppCompatActivity() {
             }?.sortedByDescending { it.lastModified() } ?: emptyList()
 
             for (file in mediaFiles) {
+                allMediaFiles.add(file)
                 container.addView(buildMediaRow(file))
             }
         }
+        updateActionLabels()
     }
 
     private fun buildMediaRow(file: File): LinearLayout {
@@ -77,9 +88,10 @@ class ReportsActivity : AppCompatActivity() {
             isChecked = file in selected
             setOnCheckedChangeListener { _, checked ->
                 if (checked) selected.add(file) else selected.remove(file)
-                exportButton.text = "Export (${selected.size})"
+                updateActionLabels()
             }
         }
+        checkboxesByFile[file] = checkbox
 
         val thumb = ImageView(this).apply {
             layoutParams = LinearLayout.LayoutParams(160, 160).apply { marginStart = 8 }
@@ -106,6 +118,24 @@ class ReportsActivity : AppCompatActivity() {
             textColumn.addView(TextView(this).apply { text = "Confidence: ${meta.optDouble("confidence")}"; textSize = 12f })
             textColumn.addView(TextView(this).apply { text = meta.optString("timestamp"); textSize = 12f })
             textColumn.addView(TextView(this).apply { text = "Camera: ${meta.optString("camera_id")}"; textSize = 12f })
+            if (meta.has("latitude") && meta.has("longitude")) {
+                val lat = meta.optDouble("latitude")
+                val lon = meta.optDouble("longitude")
+                textColumn.addView(TextView(this).apply {
+                    text = "📍 %.6f, %.6f".format(lat, lon)
+                    textSize = 12f
+                    setTextColor(getColor(R.color.brand_orange))
+                    // Tap to open the coordinates in a maps app.
+                    setOnClickListener {
+                        runCatching {
+                            startActivity(android.content.Intent(
+                                android.content.Intent.ACTION_VIEW,
+                                android.net.Uri.parse("geo:$lat,$lon?q=$lat,$lon")
+                            ))
+                        }
+                    }
+                })
+            }
         } else {
             textColumn.addView(TextView(this).apply {
                 text = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US).format(file.lastModified())
@@ -127,8 +157,45 @@ class ReportsActivity : AppCompatActivity() {
         val count = MediaVault.exportToPublicStorage(this, selected.toList())
         Toast.makeText(this, "Saved $count file(s) to Gallery/Files", Toast.LENGTH_SHORT).show()
         selected.clear()
-        exportButton.text = "Export (0)"
         recreate()
+    }
+
+    private fun updateActionLabels() {
+        exportButton.text = "Export (${selected.size})"
+        deleteButton.text = "Delete (${selected.size})"
+        selectAllButton.text =
+            if (allMediaFiles.isNotEmpty() && selected.size == allMediaFiles.size) "Clear all" else "Select all"
+    }
+
+    private fun toggleSelectAll() {
+        if (allMediaFiles.isEmpty()) return
+        val selectAll = selected.size < allMediaFiles.size
+        // Setting isChecked fires each checkbox's listener, which keeps `selected` in sync.
+        for (cb in checkboxesByFile.values) cb.isChecked = selectAll
+        updateActionLabels()
+    }
+
+    private fun deleteSelected() {
+        if (selected.isEmpty()) {
+            Toast.makeText(this, "Nothing selected", Toast.LENGTH_SHORT).show()
+            return
+        }
+        AlertDialog.Builder(this)
+            .setTitle("Delete ${selected.size} item(s)?")
+            .setMessage("This permanently removes the selected media from this phone. This can't be undone.")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Delete") { _, _ ->
+                var deleted = 0
+                for (file in selected.toList()) {
+                    val json = File(file.parentFile, file.nameWithoutExtension + ".json")
+                    if (file.delete()) deleted++
+                    if (json.isFile) json.delete()
+                }
+                Toast.makeText(this, "Deleted $deleted item(s)", Toast.LENGTH_SHORT).show()
+                selected.clear()
+                recreate()
+            }
+            .show()
     }
 
     private fun decodeSampled(file: File, reqWidth: Int, reqHeight: Int): Bitmap {

@@ -6,4 +6,13 @@
     <color name="surface_dark">#121212</color>
     <color name="on_surface_dark">#F2F2F2</color>
     <color name="ic_launcher_background">#FFFFFF</color>
+
+    <!-- Camera HUD -->
+    <color name="hud_scrim">#B3000000</color>
+    <color name="hud_pill">#99000000</color>
+    <color name="auto_on">#F5941F</color>
+    <color name="auto_off">#66000000</color>
+    <color name="hazard_red">#FF3B30</color>
+    <color name="ok_blue">#2979FF</color>
+    <color name="detect_green">#00C853</color>
 </resources>

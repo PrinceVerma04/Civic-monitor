@@ -25,15 +25,33 @@ class LandingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_landing)
 
-        findViewById<Button>(R.id.startMonitoringButton).setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+        val startBtn = findViewById<Button>(R.id.startMonitoringButton)
+        val reportsBtn = findViewById<Button>(R.id.viewReportsButton)
+        val heroLogo = findViewById<android.widget.ImageView>(R.id.heroLogo)
+
+        startBtn.setOnClickListener {
+            Anim.tap(it)
+            it.postDelayed({
+                startActivity(Intent(this, MainActivity::class.java))
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            }, 140)
         }
-        findViewById<Button>(R.id.viewReportsButton).setOnClickListener {
-            startActivity(Intent(this, ReportsActivity::class.java))
+        reportsBtn.setOnClickListener {
+            Anim.tap(it)
+            it.postDelayed({
+                startActivity(Intent(this, ReportsActivity::class.java))
+                overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            }, 140)
         }
         findViewById<ImageButton>(R.id.aboutButton).setOnClickListener {
-            startActivity(Intent(this, AboutActivity::class.java))
+            Anim.tap(it)
+            it.postDelayed({ startActivity(Intent(this, AboutActivity::class.java)) }, 140)
         }
+
+        // Staggered entrance so the screen assembles smoothly.
+        Anim.entrance(heroLogo, 60)
+        Anim.entrance(startBtn, 220)
+        Anim.entrance(reportsBtn, 300)
 
         val chipGroup = findViewById<ChipGroup>(R.id.chipContainer)
         DETECTABLE_CLASSES.forEach { label ->

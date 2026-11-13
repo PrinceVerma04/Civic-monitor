@@ -3,6 +3,7 @@ package com.civicservices.monitor
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.RectF
+import android.location.Location
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -18,7 +19,7 @@ class IncidentReporter(private val context: Context) {
     private val cooldownMillis = 60_000L
     private val lastReported = mutableMapOf<String, Long>()
 
-    fun maybeReport(bitmap: Bitmap, detection: Detection, cameraId: String) {
+    fun maybeReport(bitmap: Bitmap, detection: Detection, cameraId: String, location: Location? = null) {
         val now = System.currentTimeMillis()
         val last = lastReported[detection.label] ?: 0L
         if (now - last < cooldownMillis) return
@@ -30,19 +31,29 @@ class IncidentReporter(private val context: Context) {
 
         val box = detection.box
         val crop = safeCrop(bitmap, box)
-        File(reportsDir, "$stem.jpg").outputStream().use { out ->
+        val imageFile = File(reportsDir, "$stem.jpg")
+        imageFile.outputStream().use { out ->
             crop.compress(Bitmap.CompressFormat.JPEG, 90, out)
         }
+        // Embed GPS into the photo's EXIF so the coordinates travel with the evidence image.
+        GeoTag.stamp(imageFile, location)
 
-        val json = """
-            {
-              "class": "${detection.label}",
-              "confidence": ${"%.3f".format(detection.confidence)},
-              "timestamp": "${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())}",
-              "camera_id": "$cameraId",
-              "image": "$stem.jpg"
-            }
-        """.trimIndent()
+        // Build the report as an ordered list of "key": value fields, then join — this keeps the
+        // JSON valid whether or not a location fix is present.
+        val fields = mutableListOf(
+            "\"class\": \"${detection.label}\"",
+            "\"confidence\": ${"%.3f".format(detection.confidence)}",
+            "\"timestamp\": \"${SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US).format(Date())}\"",
+            "\"camera_id\": \"$cameraId\"",
+        )
+        if (location != null) {
+            fields += "\"latitude\": ${"%.6f".format(location.latitude)}"
+            fields += "\"longitude\": ${"%.6f".format(location.longitude)}"
+            fields += "\"location_accuracy_m\": ${"%.1f".format(location.accuracy)}"
+        }
+        fields += "\"image\": \"$stem.jpg\""
+
+        val json = fields.joinToString(",\n  ", prefix = "{\n  ", postfix = "\n}")
         File(reportsDir, "$stem.json").writeText(json)
     }
 

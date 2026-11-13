@@ -52,6 +52,6 @@ reuse the same `local.properties` SDK path.
 
 Without a trained `model.tflite` in `app/src/main/assets/`, the app still launches and
 shows the live camera preview — it just skips detection (see PLACE_MODEL_HERE.txt) rather
-than crashing. Once you've run `train.py` + `export.py` at the project root, copy
+than crashing. Once you've run `train.py` + `android_app/export.py` at the project root, copy
 `best_float16.tflite` in as `model.tflite`, rebuild with `./gradlew installDebug`, and
 you'll get live boxes for all 7 classes on-device.

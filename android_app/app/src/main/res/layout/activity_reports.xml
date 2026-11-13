@@ -50,9 +50,46 @@
         android:layout_height="wrap_content"
         android:background="#1FF5941F"
         android:padding="10dp"
-        android:text="Media auto-deletes after 7 days. Tap a checkbox to select, then Export to save it permanently to your phone's Gallery/Files."
+        android:text="Media auto-deletes after 7 days. Tap a checkbox to select, then Export to save it permanently, or Delete to remove it now."
         android:textColor="?android:attr/textColorSecondary"
         android:textSize="11sp" />
+
+    <LinearLayout
+        android:id="@+id/actionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp">
+
+        <Button
+            android:id="@+id/selectAllButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_cta_outline"
+            android:paddingHorizontal="14dp"
+            android:text="Select all"
+            android:textAllCaps="false"
+            android:textColor="@color/brand_orange"
+            android:textSize="13sp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_cta_outline"
+            android:paddingHorizontal="14dp"
+            android:text="Delete (0)"
+            android:textAllCaps="false"
+            android:textColor="@color/hazard_red"
+            android:textSize="13sp" />
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
