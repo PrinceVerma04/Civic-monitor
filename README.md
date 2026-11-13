@@ -60,11 +60,17 @@ on-device inference.
 
 ## Mobile app interface
 
-| Landing | Live detection | Reports | Report detail |
-|:--:|:--:|:--:|:--:|
-| ![Landing](docs/images/app/01_landing.png) | ![Live detection](docs/images/app/02_live_detection.png) | ![Reports](docs/images/app/03_reports.png) | ![Report detail](docs/images/app/04_report_detail.png) |
+| Landing | Live detection | Reports |
+|:--:|:--:|:--:|
+| ![Landing](docs/images/app/01_landing.png) | ![Live detection](docs/images/app/02_live_detection.png) | ![Reports](docs/images/app/03_report.png) |
 
 Kotlin · CameraX + TFLite · fully offline · live GPS geo-tagging.
+
+### Demo
+
+<video src="https://raw.githubusercontent.com/PrinceVerma04/Civic-monitor/main/docs/videos/working_demo.mp4" controls muted width="720"></video>
+
+▶ [Watch the demo video](docs/videos/working_demo.mp4) (if the player above does not load)
 
 ---
 

@@ -58,5 +58,7 @@ android_app/local.properties
 # ---------------------------------------------------------------------------
 !docs/images/
 !docs/images/**
+!docs/videos/
+!docs/videos/*.mp4
 !models/
 !models/**
