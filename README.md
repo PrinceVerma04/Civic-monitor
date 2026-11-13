@@ -100,7 +100,7 @@ model.predict("street.jpg", conf=0.25, save=True)
 python model_test_dashboard.py      # multi-person testing + annotation          :5080
 ```
 
-Both bind `0.0.0.0`, so anyone on the same WiFi can use them. The test dashboard stores
+The Streamlit demo binds `0.0.0.0`. The test dashboard listens only on this machine by default; run it with `--host 0.0.0.0` so anyone on the same WiFi can use it. The test dashboard stores
 each person's photos and hand-drawn corrections under their own name and aggregates
 live accuracy at `/stats`.
 

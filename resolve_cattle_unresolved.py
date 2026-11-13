@@ -35,6 +35,7 @@ Keyboard controls (while an image is open):
     P                 previous
 """
 import functools
+import os
 import json
 import socket
 import threading
@@ -477,4 +478,7 @@ if __name__ == "__main__":
     print(f"\nResolutions saved to: {RESULT_PATH}")
     print("Open on this machine: http://127.0.0.1:5062")
     print(f"Open from another device on the same WiFi: http://{lan_ip}:5062\n")
-    app.run(host="0.0.0.0", port=5062, debug=False)
+    if os.environ.get("HOST", "127.0.0.1") == "127.0.0.1":
+        print("(The WiFi link works only when started with HOST=0.0.0.0)")
+    # Set HOST=0.0.0.0 to let other devices on the same WiFi connect (no login, LAN only).
+    app.run(host=os.environ.get("HOST", "127.0.0.1"), port=5062, debug=False)

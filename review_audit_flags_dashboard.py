@@ -543,6 +543,8 @@ def stats():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=5070)
+    ap.add_argument("--host", default="127.0.0.1",
+                    help="use 0.0.0.0 to let other devices on the same WiFi connect (no login, LAN only)")
     ap.add_argument("--issue", default=None,
                     help="only queue one issue code, e.g. B (out-of-frame) or G (duplicate box)")
     args = ap.parse_args()
@@ -583,7 +585,9 @@ def main():
     print(f"  One class    : http://{lan}:{args.port}/?class=camel")
     print(f"  One issue    : http://{lan}:{args.port}/?issue=G")
     print(f"  Two people   : add &partition=A / &partition=B\n")
-    app.run(host="0.0.0.0", port=args.port, debug=False)
+    if args.host == "127.0.0.1":
+        print("  (Links with a WiFi address work only when started with --host 0.0.0.0)")
+    app.run(host=args.host, port=args.port, debug=False)
 
 
 if __name__ == "__main__":

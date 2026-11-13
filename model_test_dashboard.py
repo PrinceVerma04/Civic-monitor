@@ -647,6 +647,8 @@ def stats():
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--port", type=int, default=5080)
+    ap.add_argument("--host", default="127.0.0.1",
+                    help="use 0.0.0.0 to let other devices on the same WiFi connect (no login, LAN only)")
     ap.add_argument("--weights", default=str(DEFAULT_WEIGHTS))
     args = ap.parse_args()
 
@@ -674,7 +676,9 @@ def main():
     print(f"  Live results       : http://{lan}:{args.port}/stats")
     print(f"  On this machine    : http://127.0.0.1:{args.port}\n")
     print("  Everyone must be on the same WiFi. Ctrl+C to stop.\n")
-    app.run(host="0.0.0.0", port=args.port, debug=False, threaded=True)
+    if args.host == "127.0.0.1":
+        print("  (Links with a WiFi address work only when started with --host 0.0.0.0)")
+    app.run(host=args.host, port=args.port, debug=False, threaded=True)
 
 
 if __name__ == "__main__":
